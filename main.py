@@ -71,7 +71,10 @@ async def unmute(ctx, *, member : discord.Member, reason=None):
    await ctx.send(f'Unmuted {member.mention}')
    await member.send(f'You were unmuted in {ctx.guild.name}')
 
-
+@client.command()
+async def clear(ctx, amount=1):
+  await ctx.channel.purge(limit=amount)
+  await ctx.send(f'Cleared {amount} messages')
 
 keep_alive()
 client.run(os.getenv('TOKEN'))
