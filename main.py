@@ -4,11 +4,30 @@ import random
 from keep_alive import keep_alive
 from discord.ext import commands
 
-client = commands.Bot(command_prefix = 'a?')
+class CustomHelpCommand(commands.HelpCommand):
+
+  def __init__(self):
+    super().__init__()
+ 
+async def send_bot_help(self, mapping):
+  for cog in mapping:
+    await self.get_destination().send(f'(cog.qualified_name): {[command.name for command in mapping[cog]]}')
+
+async def send_cog_help(self, cog):
+  await self.get_Destination().send(f'(cog.qualified_name): {[command.name for command in cog.get_commands()]}')
+
+async def send_group_help(self, group):
+  await self.get_Destination().send(f'{group.name}: {[command.name for index, command in enumerate(group.commands)]}')
+
+
+async def send_command_help(self, command):
+   await self.get_destination().send(command.name)  
+
+client = commands.Bot(command_prefix = 'a?', help_command=commands.MinimalHelpCommand())
 
 @client.event
 async def on_ready():
-  await client.change_presence(status=discord.Status.online, activity=discord.Game('Looking for "a?"'))
+  await client.change_presence(status=discord.Status.online, activity=discord.Game('Looking for a?help'))
   print('We have logged in as {0.user}'.format(client))
   
 
@@ -104,6 +123,7 @@ async def _8ball(ctx, *, question):
             "Outlook not so good.",
             "Very doubtful."]
   await ctx.send(f'Question: {question}\nAnswer: {random.choice(responses)}')
+
 
 
 keep_alive()
